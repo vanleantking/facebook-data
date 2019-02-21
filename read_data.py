@@ -7,6 +7,7 @@ from nltk.tokenize import sent_tokenize
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
+import unicodedata
 
 DATA = "./data"
 POSTS_DATA ="./data/posts"
@@ -29,9 +30,11 @@ def read_message(data_path):
         else:
             data = read_file(path)
 
-        for item in data["comments"]:
-            print(item["data"][0]["comment"])
-            return
+        # for item in data["comments"]:
+        #     print(item["data"][0]["comment"]["comment"])
+        #     tmp = unicodedata.normalize('NFKD', item["data"][0]["comment"]["comment"]).encode('ascii','ignore')
+        #     print(tmp)
+        return
         # print(data[0])
                 # print(t)
                 # text = bs.BeautifulSoup(t, 'xml')
@@ -84,10 +87,13 @@ def read_message(data_path):
 
 
 def read_file(file_path):
-    with open(file_path, encoding='UTF-8') as data_file:
-        data = json.load(data_file)
-        # print(data)
+    with open(file_path, encoding='raw_unicode_escape') as data_file:
+        data = json.loads(data_file.read().encode('raw_unicode_escape').decode())
+        for item in data["comments"]:
+            print(item["data"][0]["comment"]["comment"])
+            tmp = unicodedata.normalize('NFKD', item["data"][0]["comment"]["comment"]).encode('ascii','ignore')
+            print(tmp)
     return data
 
-
+# print(chr('\u2020'))
 read_message(COMMENTS_DATA)
